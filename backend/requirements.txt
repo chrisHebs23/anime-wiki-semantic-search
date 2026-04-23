@@ -4,3 +4,4 @@ dotenv
 supabase
 fastapi
 pydantic
+httpx

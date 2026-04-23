@@ -15,7 +15,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-model = genai.Client(os.environ.get("GEMINI_API_KEY"))
+model = genai.Client(api_key=os.environ.get("GEMINI_API_KEY"))
 
 url: str = os.environ.get("SUPABASE_URL")
 key: str = os.environ.get("SUPABASE_KEY")

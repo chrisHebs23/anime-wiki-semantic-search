@@ -5,7 +5,7 @@ from models import AnimeInsert
 
 def embedding(synopsis: list[str]):
     response = model.models.embed_content(
-        model="gemini-2.5-flash-lite",
+        model="gemini-embedding-001",
         contents=synopsis,
         config=types.EmbedContentConfig(output_dimensionality=768),
     )
@@ -15,7 +15,5 @@ def embedding(synopsis: list[str]):
 
 def store_data_sets(animes: list[AnimeInsert]):
     records = [anime.model_dump() for anime in animes]
-
-    response = sb.table("anime").insert(records).execute()
-
+    response = sb.table("anime").upsert(records, on_conflict="mal_id").execute()
     return response.data
