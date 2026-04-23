@@ -1,5 +1,6 @@
 from google.genai import types
 from clients import model, sb
+from models import AnimeInsert
 
 
 def embedding(synopsis: list[str]):
@@ -12,5 +13,9 @@ def embedding(synopsis: list[str]):
     return response.embeddings
 
 
-def store_data(anime, synopsis_embedding):
-    sb.table("anime").insert
+def store_data_sets(animes: list[AnimeInsert]):
+    records = [anime.model_dump() for anime in animes]
+
+    response = sb.table("anime").insert(records).execute()
+
+    return response.data
