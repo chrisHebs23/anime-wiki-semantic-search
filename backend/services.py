@@ -20,6 +20,23 @@ def store_data_sets(animes: list[AnimeInsert]) -> list:
     return response.data
 
 
+def search_anime(
+    query: str, match_threshold: float = 0.4, match_count: int = 5
+) -> list[dict]:
+    embedded_query = embed_texts([query])[0].values
+
+    response = sb.rpc(
+        "match_anime",
+        {
+            "query_embedding": embedded_query,
+            "match_threshold": match_threshold,
+            "match_count": match_count,
+        },
+    ).execute()
+
+    return response.data or []
+
+
 def semantic_search(query: str) -> str:
     """
     Searches the anime database for anime that semantically match the given query.
@@ -36,21 +53,10 @@ def semantic_search(query: str) -> str:
         genres, score and synopsis.
     """
 
-    embedded_query = embed_texts([query])[0].values
-
     try:
-        response = sb.rpc(
-            "match_anime",
-            {
-                "query_embedding": embedded_query,
-                "match_threshold": 0.5,
-                "match_count": 5,
-            },
-        ).execute()
+        matches = search_anime(query)
     except Exception as e:
         return f"Search failed: {str(e)}"
-
-    matches = response.data
 
     if not matches:
         return "No anime found matching that description"

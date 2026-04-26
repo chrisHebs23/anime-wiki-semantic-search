@@ -1,7 +1,7 @@
 import time
 import httpx
 from models import AnimeInsert
-from services import embedding, store_data_sets
+from services import embed_texts, store_data_sets
 from google.genai import errors as genai_errors
 
 
@@ -79,7 +79,7 @@ def seed(total: int = 500, batch_size: int = 25):
         # Retry loop for rate limit handling
         while True:
             try:
-                embeddings = embedding(synopses)
+                embeddings = embed_texts(synopses)
                 break  # success — exit retry loop
 
             except genai_errors.ClientError as e:

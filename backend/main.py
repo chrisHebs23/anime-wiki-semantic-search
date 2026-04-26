@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException
 from fastapi.middleware.cors import CORSMiddleware
 
 from models import SearchRequest
-from services import generate_response
+from services import generate_response, search_anime
 
 app = FastAPI()
 
@@ -22,6 +22,9 @@ async def health():
 @app.post("/recommend")
 async def recommend(request: SearchRequest):
     try:
+        matches = search_anime(
+            request.query, request.match_threshold, request.match_count
+        )
         recommendation = generate_response(request.query)
     except Exception as e:
         raise HTTPException(
@@ -29,4 +32,8 @@ async def recommend(request: SearchRequest):
             detail=f"Failed to generate recommendation: {str(e)}",
         )
 
-    return {"query": request.query, "recommendation": recommendation}
+    return {
+        "query": request.query,
+        "recommendation": recommendation,
+        "matches": matches,
+    }
